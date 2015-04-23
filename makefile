@@ -9,8 +9,9 @@ src/main.cpp \
 src/application.cpp \
 src/renderer.cpp \
 src/loadshader.cpp \
+src/rendertypes.cpp \
 
-CPP_CFLAGS=-Isrc/ `pkg-config --cflags glfw3` -Iglbinding/
+CPP_CFLAGS=-Isrc/ `pkg-config --cflags glfw3` -Iglbinding/ -Iglm/
 CPP_LIBS=-lm `pkg-config --libs glfw3` -lglbinding
 
 CPP_ADDITIONAL=-std=c++11 -Wall -fsanitize=address

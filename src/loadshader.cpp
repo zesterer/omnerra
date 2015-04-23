@@ -54,7 +54,7 @@ namespace Omnerra
 		glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength);
 		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-		fprintf(stdout, "%s\n", &VertexShaderErrorMessage[0]);
+		fprintf(stdout, "%s", &VertexShaderErrorMessage[0]);
 
 		// Compile Fragment Shader
 		printf("Compiling shader : %s\n", fragment_file_path);
@@ -67,7 +67,7 @@ namespace Omnerra
 		glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 		std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
 		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-		fprintf(stdout, "%s\n", &FragmentShaderErrorMessage[0]);
+		fprintf(stdout, "%s", &FragmentShaderErrorMessage[0]);
 
 		// Link the program
 		fprintf(stdout, "Linking program\n");
@@ -81,7 +81,7 @@ namespace Omnerra
 		glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 		std::vector<char> ProgramErrorMessage( max(InfoLogLength, int(1)) );
 		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-		fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
+		fprintf(stdout, "%s", &ProgramErrorMessage[0]);
 
 		glDeleteShader(VertexShaderID);glDeleteShader(FragmentShaderID);
 

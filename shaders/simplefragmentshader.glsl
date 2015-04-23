@@ -1,8 +1,9 @@
 #version 300 es
 out lowp vec3 color;
 
+in lowp vec3 fragmentColor;
+
 void main()
 {
-	color = vec3(1, 0, 0);
+	color = fragmentColor;
 }
-
