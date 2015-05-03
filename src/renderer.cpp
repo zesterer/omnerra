@@ -16,6 +16,7 @@
 #include "renderer.h"
 #include "rendertypes.h"
 #include "renderstructures.h"
+#include "structures/model.h"
 #include "loadshader.h"
 
 using namespace std;
@@ -41,7 +42,7 @@ namespace Omnerra
 		}
 
 		printf("Creating window: ");
-		if ((this->window = glfwCreateWindow(400, 400, "Omnerra Test", NULL, NULL)))
+		if ((this->window = glfwCreateWindow(640, 480, "Omnerra Test", NULL, NULL)))
 		{
 			printf("SUCCEEDED\n");
 		}
@@ -68,14 +69,14 @@ namespace Omnerra
 		RenderTypes::ObjectType cube =
 		{
 			8, {
-				-10, -10, +10, 0.0f, 0.0f, 0.0f, //Vertex v0
-				+10, -10, +10, 1.0f, 0.0f, 0.0f, //Vertex v1
-				+10, -10, -10, 1.0f, 0.5f, 0.5f, //Vertex v2
-				-10, -10, -10, 1.0f, 1.0f, 0.0f, //Vertex v3
-				-10, +10, +10, 0.0f, 1.0f, 0.0f, //Vertex v4
-				+10, +10, +10, 0.0f, 0.0f, 1.0f, //Vertex v5
-				+10, +10, -10, 0.5f, 0.5f, 1.0f, //Vertex v6
-				-10, +10, -10, 0.5f, 1.0f, 0.5f, //Vertex v7
+				-0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 0.0f, //Vertex v0
+				+0.5f, -0.5f, +0.5f, 1.0f, 0.0f, 0.0f, //Vertex v1
+				+0.5f, -0.5f, -0.5f, 1.0f, 0.5f, 0.5f, //Vertex v2
+				-0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, //Vertex v3
+				-0.5f, +0.5f, +0.5f, 0.0f, 1.0f, 0.0f, //Vertex v4
+				+0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 1.0f, //Vertex v5
+				+0.5f, +0.5f, -0.5f, 0.5f, 0.5f, 1.0f, //Vertex v6
+				-0.5f, +0.5f, -0.5f, 0.5f, 1.0f, 0.5f, //Vertex v7
 			},
 			12, {
 				0, 1, 4, //Polygon 00
@@ -93,11 +94,6 @@ namespace Omnerra
 			}
 		};
 
-		Structures::MeshObject* pyramid = new Structures::MeshObject();
-		//pyramid->addVertex(new Structures::Vertex(0.0f, 0.0f, 1.0f), new Structures::Vertex(0.3f, 0.3f, 0.3f);
-		//pyramid->addPolygon({-1.0f, +1.0f, -1.0f}, {+0.0f, +0.0f, +1.0f}, {+1.0f, +1.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
-		//pyramid->addPolygon({+1.0f, -1.0f, -1.0f}, {+0.0f, +0.0f, +1.0f}, {-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
-
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
@@ -108,21 +104,12 @@ namespace Omnerra
 		glGenBuffers(1, &this->vertex_buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, this->vertex_buffer);
 
+		Render::Mesh* mesh = new Render::Mesh();
+		mesh->loadOBJ("Skeleton.obj");
+		this->colour_array_id = mesh->polygon.size();
+
 		//Pass the vertex position data to GL (the graphics card)
-		glBufferData(GL_ARRAY_BUFFER, cube.getSize(), cube.getBuffer(), GL_STATIC_DRAW);
-		//glBufferData(GL_ARRAY_BUFFER, pyramid->position_array->size(), pyramid->position_array, GL_STATIC_DRAW);
-
-		//The vertex colour array
-		glGenVertexArrays(1, &this->colour_array_id);
-		glBindVertexArray(this->colour_array_id);
-
-		glGenBuffers(1, &this->colour_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, this->colour_buffer);
-
-		//Pass the vertex colour data to GL (the graphics card)
-		glBufferData(GL_ARRAY_BUFFER, cube.getSize(), cube.vertex_colour_data, GL_STATIC_DRAW);
-
-
+		glBufferData(GL_ARRAY_BUFFER, mesh->getBufferSize(), &mesh->polygon[0], GL_STATIC_DRAW);
 
 		//Load the shaders
 		this->program_id = loadShaders( "shaders/simplevertexshader.glsl", "shaders/simplefragmentshader.glsl" );
@@ -144,21 +131,6 @@ namespace Omnerra
 
 	void Renderer::render()
 	{
-		//Model space
-		this->original_vector = glm::mat4(1.0f); //Model matrix
-		this->original_vector = glm::scale(this->original_vector, glm::vec3(0.1f, 0.1f, 0.1f));
-		this->original_vector = glm::rotate(this->original_vector, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-		this->original_vector = glm::rotate(this->original_vector, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-		this->original_vector = glm::rotate(this->original_vector, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-		this->original_vector = glm::translate(this->original_vector, glm::vec3(0.0f, 0.0f, 0.0f));
-
-		//Camera space
-		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 4.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		//Projection matrix
-		glm::mat4 projection_matrix = glm::perspective(45.0f, 1.0f / 1.0f, 0.1f, 100.0f);
-		this->original_vector = projection_matrix * view * this->original_vector;
-
 		this->angle += 0.015f;
 
 		//Clear the screen
@@ -168,22 +140,50 @@ namespace Omnerra
 		//Use the specified shaders
 		glUseProgram(this->program_id);
 
+		glBindBuffer(GL_ARRAY_BUFFER, this->vertex_buffer);
+
 		//Enable
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, this->vertex_buffer);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 11, (void*)0);
 
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, this->colour_buffer);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 11, (void*)(sizeof(GLfloat) * 8));
 
-		glUniformMatrix4fv(this->matrix_id, 1, GL_FALSE, &this->original_vector[0][0]);
+		for (int x = 0; x < 1; x ++)
+		{
+			for (int y = 0; y < 1; y ++)
+			{
+				for (int z = 0; z < 1; z ++)
+				{
+					//Model space
+					this->original_vector = glm::mat4(1.0f); //Model matrix
+					this->original_vector = glm::rotate(this->original_vector, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+					//this->original_vector = glm::rotate(this->original_vector, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+					//this->original_vector = glm::rotate(this->original_vector, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+					this->original_vector = glm::rotate(this->original_vector, 1.55f, glm::vec3(1.0f, 0.0f, 0.0f));
+					this->original_vector = glm::translate(this->original_vector, glm::vec3((float)x * 2, (float)y * 2, (float)z * 2));
+					this->original_vector = glm::scale(this->original_vector, glm::vec3(0.4f, 0.4f, 0.4f));
+					//this->original_vector = glm::rotate(this->original_vector, angle, glm::vec3(1.0f, 0.0f, 0.0f));
 
-		//Draw the triangle
-		glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+					//Camera space
+					glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 2.0f, 1.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+					//Projection matrix
+					glm::mat4 projection_matrix = glm::perspective(1.5f, 640.0f / 480.0f, 0.01f, 1000.0f);
+					this->original_vector = projection_matrix * view * this->original_vector;
+
+					glUniformMatrix4fv(this->matrix_id, 1, GL_FALSE, &this->original_vector[0][0]);
+
+					//Draw the triangle
+					//if (abs(x) + abs(y) + abs(z) < 12)
+					glDrawArrays(GL_TRIANGLES, 0, this->colour_array_id * 3);
+				}
+			}
+	}
 
 		//Disable
 		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
 	}
 
 	void Renderer::close()

@@ -33,9 +33,9 @@ namespace Omnerra
 			glBindVertexArray(0);
 		}
 
-		public: void MeshObject::addVertex(Vertex vertex, Colour colour)
+		public: void MeshObject::addVertex(float x, float y, float z, float r, g, b)
 		{
-			this->vertex_array.push_back(vertex);
+			this->vertex_array.push_back(new VertexType());
 			this->colour_array.push_back(colour);
 		}
 

@@ -31,7 +31,7 @@ namespace Omnerra
 			public: int polygon_count;
 			public: PolygonType polygon[MAX_POLYGONS];
 
-			public: GLfloat vertex_buffer_data[MAX_POLYGONS * 3 * 3];
+			public: GLfloat vertex_buffer_data[MAX_POLYGONS * 3 * 3 * 2];
 			public: GLfloat vertex_colour_data[MAX_POLYGONS * 3 * 3];
 
 			public: GLfloat* getBuffer();

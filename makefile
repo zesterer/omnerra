@@ -10,8 +10,13 @@ src/application.cpp \
 src/renderer.cpp \
 src/loadshader.cpp \
 src/rendertypes.cpp \
+\
+src/structures/model.cpp \
 
-CPP_CFLAGS=-Isrc/ `pkg-config --cflags glfw3` -Iglbinding/ -Iglm/
+CPP_CFLAGS=`pkg-config --cflags glfw3` -Iglbinding/ -Iglm/ \
+-Isrc/ \
+-Isrc/structures/ \
+
 CPP_LIBS=-lm `pkg-config --libs glfw3` -lglbinding
 
 CPP_ADDITIONAL=-std=c++11 -Wall -fsanitize=address
@@ -29,6 +34,11 @@ build: $(CPP_SOURCES)
 run: $(FINAL)
 	@echo "Running..."
 	@./$(FINAL)
+
+buildtools:
+	@echo "Building tools..."
+	python tools/obj2raw/obj2raw.py
+	@echo "Built."
 
 buildrun:
 	@make build
